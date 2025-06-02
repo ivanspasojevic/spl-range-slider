@@ -1,77 +1,106 @@
 
+  :host {
+    --spl-track-color: #e0e0e0;
+    --spl-progress-color: #1c6cff;
+    --spl-handler-border-color: #1c6cff;
+    --spl-handler-bg-color: #fff;
+    --spl-handler-size: 14px;
+    --spl-handler-active-size: 20px;
+    --spl-track-height: 2px;
+    --spl-handler-touch-target-size: calc(var(--spl-handler-size) + 8px); /* Example: 14px + 8px = 22px */
+    --spl-handler-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+    --spl-track-border-radius: 2px;
+  }
+
   .spl-range-slider {
     touch-action: none;
     position: relative;
-    height: 22px;
+    /* Height should accommodate the largest handler size or touch target for vertical alignment */
+    height: var(--spl-handler-active-size);
     display: flex;
-    flex-direction: row;
+    flex-direction: row; /* Stays as row for horizontal slider */
     flex-wrap: nowrap;
+    align-items: center; /* Vertically center items like track and handlers */
   }
 
-  .spl-range-slider__line {
+  /* .spl-range-slider__line is identical to .spl-range-slider__line-ghost, consider removing one if truly redundant.
+     For now, styling both. */
+  .spl-range-slider__line,
+  .spl-range-slider__line-ghost {
     width: 100%;
-    height: 2px;
-    background-color: #e0e0e0;
-    border-radius: 2px;
-    top: 7px;;
+    height: var(--spl-track-height);
+    background-color: var(--spl-track-color);
+    border-radius: var(--spl-track-border-radius);
     position: absolute;
-    left: 0;
+    /* Using inset-inline-start for logical property, top remains for vertical positioning */
+    inset-inline-start: 0;
+    /* top: 7px; Recalculate based on track height and handler alignment if needed, or remove if align-items works */
+    /* top: calc( (var(--spl-handler-active-size) - var(--spl-track-height)) / 2 ); */ /* Centers track if slider height is handler-active-size */
     z-index: 1;
   }
 
   .spl-range-slider__group-line {
     width: 100%;
-    height: 2px;
-    background-color: #e0e0e0;
-    border-radius: 2px;
-    top: 7px;;
-    position: relative;
-    z-index: 2;
+    height: var(--spl-track-height);
+    background-color: var(--spl-track-color); /* Base track shown under progress */
+    border-radius: var(--spl-track-border-radius);
+    /* top: 7px; Removed, relying on flex align-items for vertical centering */
+    position: relative; /* Keep relative for progress bar positioning */
+    z-index: 2; /* Above the ghost line */
   }
 
   .spl-range-slider__handler {
-    width: 14px;
-    height: 14px;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
-    background: #fff;
-    border: solid 1px #1c6cff;
+    width: var(--spl-handler-size);
+    height: var(--spl-handler-size);
+    box-shadow: var(--spl-handler-shadow);
+    background: var(--spl-handler-bg-color);
+    border: solid 1px var(--spl-handler-border-color);
     border-radius: 50%;
     cursor: grab;
     z-index: 3;
     flex-shrink: 0;
-    transform: translate(0px, 0px);
-    transition: margin 0.1s ease-out, width 0.1s ease-out, height 0.1s ease-out;
+    /* transform: translate(0px, 0px); This is set by JS, keep it if needed for JS calculations */
+    /* transition for size and margin */
+    transition: margin 0.1s ease-out, width 0.1s ease-out, height 0.1s ease-out, transform 0.1s ease-out;
+    position: relative; /* Needed for z-index and absolute positioning of ::before */
+  }
 
-    &:before {
-      content: '';
-      width: 22px;
-      height: 22px;
-      margin: -4px;
-      position: absolute;
-    }
+  .spl-range-slider__handler::before { /* Changed from &:before for standard CSS */
+    content: '';
+    position: absolute;
+    /* Scale touch target based on handler size */
+    width: var(--spl-handler-touch-target-size);
+    height: var(--spl-handler-touch-target-size);
+    /* Center the ::before pseudo-element on the handler */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* margin: -4px; Replaced by transform for centering a larger touch target */
+    border-radius: 50%; /* Optional: make touch area circular */
+    /* background-color: rgba(0,0,0,0.1); /* For visual debugging of touch area */
   }
 
   .spl-range-slider__handler--is-moving {
-    position: relative;
+    /* position: relative; Already relative */
     cursor: grabbing;
-    width: 20px;
-    height: 20px;
-    margin: -3px 0 0 -3px;
+    width: var(--spl-handler-active-size);
+    height: var(--spl-handler-active-size);
+    /* Adjust margin to keep the larger handler centered on the track line.
+       The amount to pull back is half the difference in size.
+       (handler-active-size - handler-size) / 2
+       Example: (20px - 14px) / 2 = 3px. So, margin: -3px.
+    */
+    margin-top: calc((var(--spl-handler-size) - var(--spl-handler-active-size)) / 2);
+    margin-left: calc((var(--spl-handler-size) - var(--spl-handler-active-size)) / 2);
+    /* Using margin-left for horizontal. Could be margin-inline-start if transform isn't an issue.
+       However, since the component's JS calculates transforms for positioning,
+       this margin adjustment is primarily for visual centering of the enlarged handler itself.
+    */
   }
 
   .spl-range-slider__progress {
-    height: 2px;
-    background-color: #1c6cff;
-    border-radius: 2px;
-  }
-
-  .spl-range-slider__line-ghost {
-    width: 100%;
-    height: 2px;
-    background-color: #e0e0e0;
-    border-radius: 2px;
-    top: 7px;;
-    position: absolute;
-    left: 0;
-    z-index: 1;
+    height: var(--spl-track-height);
+    background-color: var(--spl-progress-color);
+    border-radius: var(--spl-track-border-radius);
+    /* transform is set by JS */
   }
