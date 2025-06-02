@@ -3,5 +3,53 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
+    "spl-range-slider": {
+      "projectType": "library",
+      "root": "projects/spl-range-slider",
+      "sourceRoot": "projects/spl-range-slider/src",
+      "prefix": "spl",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/spl-range-slider/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/spl-range-slider/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/spl-range-slider/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "projects/spl-range-slider/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/spl-range-slider/**/*.ts",
+              "projects/spl-range-slider/**/*.html"
+            ],
+            "eslintConfig": "projects/spl-range-slider/eslint.config.js"
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   }
 }

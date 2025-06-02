@@ -14,6 +14,11 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "moduleResolution": "bundler",
+    "paths": {
+      "spl-range-slider": [
+        "./dist/spl-range-slider"
+      ]
+    },
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022"
